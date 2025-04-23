@@ -1,0 +1,20 @@
+deprecated/
+node_modules/
+dist/
+build/
+**/.DS_Store
+privateKey.pem
+
+# Suggestions added by by Cursor
+*.crx
+*.pem
+*.log
+coverage/
+.env
+.idea/
+.vscode/
+*.zip
+*.tar.gz
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

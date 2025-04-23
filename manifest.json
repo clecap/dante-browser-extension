@@ -1,0 +1,45 @@
+{
+
+  "manifest_version": 3,
+  "name": "lameBrowserSynch",
+  "description": "Up and Download for bookmark synchronization in chrome",
+  "version": "1.0",
+  "author": "Clemens H. Cap ",
+  "action": {
+    "default_popup": "html/popup.html",
+    "default_icon":  {
+      "16":  "media/bookmark.16.png",
+      "32":  "media/bookmark.32.png",
+      "48":  "media/bookmark.48.png",
+      "128": "media/bookmark.128.png"
+    }
+  },
+  "icons": {
+     "16": "media/bookmark.16.png",
+     "32": "media/bookmark.32.png",
+     "48": "media/bookmark.48.png",
+    "128": "media/bookmark.128.png"
+  },
+  "background": {
+    "service_worker": "dist/bundle.js", "type": "module"
+  },
+
+  "options_page": "html/options.html",
+
+  "permissions": [
+    "sidePanel", 
+    "bookmarks", 
+    "alarms",
+    "notifications",
+    "storage",
+    "activeTab",
+    "tabs",
+    "background",
+    "downloads",
+    "windows"
+  ],
+
+  "side_panel": {"default_path": "html/sidepanel.html"},
+  "host_permissions": ["https://*.amazonaws.com/*"],
+  "minimum_chrome_version": "102"
+}
