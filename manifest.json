@@ -1,45 +1,57 @@
 {
 
-  "manifest_version": 3,
-  "name": "lameBrowserSynch",
-  "description": "Up and Download for bookmark synchronization in chrome",
-  "version": "1.0",
-  "author": "Clemens H. Cap ",
+  "manifest_version":  3,
+  "name":              "dante-browser-extension",
+  "description":       "extension supporting DanteWiki operations",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsvEclRwS1X2GrRYh0yLUUvkuTfStoytjUSFMD5aQ2+o9B3vF8ZkO4dWfUvAqhx5QzltRUbVKftG9AmU9s7N6V7mh0RXoCnhDB/3znRxy7rXgjOaEOnpH6j4b3aY4C3G0CkRg3VR2sJ6HDMBUSnxvVFiN2xGbD5W6AJG6V4i1x1r3+cuOhkqefmylu+y9SlcDNnmCVyLyU+vhcSAEsw6kOJJAwkeWxQIDAQAB",
+  "version":           "1.0",
+  "author":            "Clemens H. Cap ",
   "action": {
     "default_popup": "html/popup.html",
     "default_icon":  {
-      "16":  "media/bookmark.16.png",
-      "32":  "media/bookmark.32.png",
-      "48":  "media/bookmark.48.png",
-      "128": "media/bookmark.128.png"
+      "16":  "media/dante-16.png",
+      "32":  "media/dante-32.png",
+      "48":  "media/dante-48.png",
+      "128": "media/dante-128.png"
     }
   },
   "icons": {
-     "16": "media/bookmark.16.png",
-     "32": "media/bookmark.32.png",
-     "48": "media/bookmark.48.png",
-    "128": "media/bookmark.128.png"
+     "16": "media/dante-16.png",
+     "32": "media/dante-32.png",
+     "48": "media/dante-48.png",
+    "128": "media/dante-128.png"
   },
   "background": {
-    "service_worker": "dist/bundle.js", "type": "module"
+    "service_worker": "js/background.js", "type": "module"
   },
 
   "options_page": "html/options.html",
 
   "permissions": [
-    "sidePanel", 
-    "bookmarks", 
-    "alarms",
-    "notifications",
-    "storage",
+    "clipboardRead",
+    "cookies",
     "activeTab",
+    "storage",
     "tabs",
     "background",
     "downloads",
-    "windows"
+    "windows",
+    "scripting", "nativeMessaging"
   ],
 
+"content_scripts": [
+  {
+    "matches": ["<all_urls>"],
+    "js": ["js/content.js"]
+  }],
+
+"web_accessible_resources": [
+  {
+    "resources": ["html/cropper.html"],
+    "matches": ["<all_urls>"]
+  }],
+
   "side_panel": {"default_path": "html/sidepanel.html"},
-  "host_permissions": ["https://*.amazonaws.com/*"],
+  "host_permissions": [ "<all_urls>" ],
   "minimum_chrome_version": "102"
 }
