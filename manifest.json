@@ -3,9 +3,10 @@
   "manifest_version":  3,
   "name":              "dante-browser-extension",
   "description":       "extension supporting DanteWiki operations",
+  "short_name":        "DanteWiki",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsvEclRwS1X2GrRYh0yLUUvkuTfStoytjUSFMD5aQ2+o9B3vF8ZkO4dWfUvAqhx5QzltRUbVKftG9AmU9s7N6V7mh0RXoCnhDB/3znRxy7rXgjOaEOnpH6j4b3aY4C3G0CkRg3VR2sJ6HDMBUSnxvVFiN2xGbD5W6AJG6V4i1x1r3+cuOhkqefmylu+y9SlcDNnmCVyLyU+vhcSAEsw6kOJJAwkeWxQIDAQAB",
   "version":           "1.0",
-  "author":            "Clemens H. Cap ",
+  "author":            {"email": "clemens.cap@dante.wiki"},
   "action": {
     "default_popup": "html/popup.html",
     "default_icon":  {
@@ -13,7 +14,7 @@
       "32":  "media/dante-32.png",
       "48":  "media/dante-48.png",
       "128": "media/dante-128.png"
-    }
+    } 
   },
   "icons": {
      "16": "media/dante-16.png",
@@ -36,7 +37,7 @@
     "background",
     "downloads",
     "windows",
-    "scripting", "nativeMessaging"
+    "scripting", "nativeMessaging", "webNavigation"
   ],
 
 "content_scripts": [

@@ -9,13 +9,14 @@
       }
   #loggedIn {min-height:20px;}
 
-
+.loggedOut #capture-btn    {display:none;}
+.loggedIn  #capture-btn    {display:block;}
 
     </style>
   </head>
   <body>
     <div id="loggedIn"></div>
     <button id="capture-btn">Capture Tab</button>
-    <script src="../js/popup.js"></script>
+    <script type='module' src="../js/popup.js"></script>
   </body>
 </html>
