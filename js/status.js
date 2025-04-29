@@ -46,14 +46,16 @@ const displayStatus = () => {
 
 // must provide doc from the caller (popup)
 export const displayUser = async ( doc ) => {
+  if (typeof doc === "undefined") { console.log ("returning, no document object ", doc); return;}   // when called from within a serviceworker context
   const user = (await chrome.storage.local.get ( ['USER'] )).USER; // read from storae since we here might be in a different module instantiation (popup)
   console.log ("displaying user now in popup at document object ", doc);
-  if (typeof doc === "undefined") { console.log ("returning, no document object ", doc); return;}   // when called from within a serviceworker context
+
   let loggedIn = doc.getElementById ("loggedIn");
-  if (user !== null) {loggedIn.innerHTML = "Logged in as user: <b>" + escapeHTML (user) + "</b>"; doc.body.classList.add ("loggedIn"); doc.body.classList.remove ("loggedOut");}
-  else               {loggedIn.innerHTML = "Please log in into DanteWiki! <a target='_blank' href='"+WIKI+"/index.php?title=Special:UserLogin&returnto=Main+Page'>log in</a>"; doc.body.classList.add ("loggedOut");doc.body.classList.remove("loggedIn");}
+  if (user !== null) {loggedIn.innerHTML = "Logged in as user: <b>" + escapeHTML (user) + "</b> You can <a target='_blank' href='" + WIKI + "/index.php?title=Special:UserLogout'>Log out</a>"; 
+                      doc.body.classList.add ("loggedIn"); doc.body.classList.remove ("loggedOut");}
+  else               {loggedIn.innerHTML = "Please log in into DanteWiki! <a target='_blank' href='"+WIKI+"/index.php?title=Special:UserLogin&returnto=Main+Page'>log in</a>";doc.body.classList.add ("loggedOut");doc.body.classList.remove("loggedIn");}
   // target=_blank" is a must due to cross site settings. If not set, the link is not navigated to.
-  console.log ("displayed user in popup");
+  console.log ("------------------------------------------displayed user in popup");
 }
 
 
@@ -69,7 +71,7 @@ export const setStatus = async (val) => {
       else                          { STATUS = "in";   }
     } catch (error) { console.log (error);
       USER = undefined;
-      STATUS = "Error: " + error;
+      STATUS = error;
     }
   }
   await chrome.storage.local.set( { STATUS, USER } );

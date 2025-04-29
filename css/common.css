@@ -1,0 +1,6 @@
+
+/* A common css file helps us keep the GUI consistent */
+
+body, * {font-size:16pt;}
+#url {width:90%;}
+table, input  {margin-left:20pt;}

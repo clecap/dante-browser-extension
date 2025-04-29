@@ -4,9 +4,36 @@ export const WIKI="https://localhost:4443/wiki-dir/";  // TODO: should be set in
 export const DOMAIN = "localhost";
 
 
+
+export const extractDomain = url => {
+  try {
+    let normalizedUrl = url.trim();
+    if (!/^https?:\/\//i.test(normalizedUrl)) {normalizedUrl = 'https://' + normalizedUrl;}
+    const parsedUrl = new URL(normalizedUrl);
+    return parsedUrl.hostname;
+  } catch (error) {
+    console.error('Invalid URL:', url);
+    return null;
+  }
+}
+
+export const removeQuery = url => {
+  try {
+    const parsed = new URL(url);
+    parsed.search = ''; // Remove the query part
+    return parsed.toString();
+  } catch (error) {
+    console.error('Invalid URL:', url);
+    return url;
+  }
+}
+
+
+
 import {setStatus} from "/js/status.js";
 
 chrome.storage.local.set ( { WIKI, DOMAIN}, () => {console.log('Value stored!');});
+
 
 
 // returns JSON !
@@ -37,16 +64,16 @@ export async function fetchWithTimeout (url, options = {}, timeout = 10000, clea
 //   null        anonymous user
 //   username    otherwise
 export async function getUser () {
-  console.log ("Will check logon status and get user for: " + WIKI);
+  // console.log ("Will check logon status and get user for: " + WIKI);
   setStatus ("waiting");
   let URL = WIKI + "/api.php?action=query&meta=userinfo&format=json";
 
   try {
     let data = await fetchWithTimeout ( URL, { method: 'POST'}, 10000, "user info" );
-    console.log ("getUser: Got reply", data);
+    // console.log ("getUser: Got reply", data);
      // use a "POST", because we want the client to send an Origin header in the request
     // the origin header must be sent to allow the server proper handling of the CORS situation according to the Access-Control-Allow-Origin settings
-    console.log ("------------ full  ", data);
+    // console.log ("full  ", data);
     let userinfo = data?.query?.userinfo;
     if (userinfo.id === 0) { return Promise.resolve (null);          }
     else                     { return Promise.resolve (userinfo.name); }

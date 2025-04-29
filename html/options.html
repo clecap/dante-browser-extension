@@ -1,38 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Extension Options</title>
+  <title>DanteWiki Extension Options</title>
   <script src="../js/options.js" defer></script>
+  <link rel="stylesheet" href="../css/common.css">
   <style>
 input {width:400px;}
+
+#debug {width:20px;}
+
 
 </style>
 </head>
 <body>
-<h1>AWS Configuration</h1>
-<form>
-<table>
-<tr><td>  <label  for="AES_PASSWORD">AES Password</label>                    </td><td> <input type="password" id="AES_Password"           name="AES_Password">          </td>
-<td>Used for end-to-end encryption of the file, only known to you</td>
-</tr>
-<tr><td>  <label  for="AWS_ACCESS_KEY_ID">AWS Access Key ID</label>          </td><td> <input type="text"     id="AWS_ACCESS_KEY_ID"      name="AWS_ACCESS_KEY_ID">     </td>
-<td>Access Key for the IAM User</td>
-</tr>
-<tr><td>  <label  for="AWS_SECRET_ACCESS_KEY">AWS Secret Access Key</label>  </td><td> <input type="password" id="AWS_SECRET_ACCESS_KEY"  name="AWS_SECRET_ACCESS_KEY"> </td>
-<td>Secret Access key for the IAM User</td>
-</tr>
-<tr><td>  <label  for="AWS_DEFAULT_REGION">AWS Default Region</label>        </td><td> <input type="text"     id="AWS_DEFAULT_REGION"     name="AWS_DEFAULT_REGION">    </td>
-<td>Region of the Bucket. For examle: eu-north-1</td>
-</tr>
-<tr><td>  <label  for="AWS_BUCKETNAME">AWS Bucket Name</label>               </td><td> <input type="text"     id="AWS_BUCKETNAME"         name="AWS_BUCKETNAME">        </td>
-<td>Name of the S3 Bucket</td>
-</tr>
-</table>
-  <button id="save">Save</button>
-<!-- trigger Bitwrden autofill mechanism -->
-  <input type="text" name="username" style="display: none;">
-  <input type="password" name="password" style="display: none;">
-</form>
+
+This extension uses the following parameters:
+
+URL: <input type="text" id="url"></input><br>
+
+Domain: <input type="text" id="domain"></input><br>
+
+Debug: <input type="checkbox" id="debug"></input><br>
 
 </body>
 </html>

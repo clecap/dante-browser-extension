@@ -3,18 +3,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!-- Must force UTF-8 for the icons-->
 <style>
 
-
-
+body, * {font-size:16pt;}
+#url {width:90%;}
+table, input  {margin-left:20pt;}
 </style>
 
 </head>
 <body>
 
-Welcome to the Chrome browser extension of DanteWiki.
+<b>Welcome to the Chrome browser extension of <a href="https://dante.wiki">DanteWiki</a>.</b>
 
-To fully benefit from this extension we recommend you pin it in the extension manager so you always see the status of your DanteWiki in all operations.
+<p>To fully benefit from this extension we recommend you pin it in the extension manager.</p>
 
-Icons you might see comprise:
+<p>This guarantees thatyou always see the status of your DanteWiki during all operations.</p>
 
 <table>
 <tr><td>✅</td><td>DanteWiki is operative and you are logged on</td></tr>
@@ -23,8 +24,19 @@ Icons you might see comprise:
 </table>
 
 
+<h3>Connect Extension to DanteWiki</h3>
 
+<p>The extension needs to identify the DanteWiki with which it will be used.</p>
 
+<p>To establish this, please use a different browser window to navigate to the Main Page of your DanteWiki.</p>
+
+<p>Copy the URL into the clipboard and paste it into the field below.</p>
+
+<p>This window will then close automatically and you are all set!</p>
+
+<input type="text" id="url" name="url" placeholder='asdad'>
+
+<script src="../js/welcome.js"></script>
 
 
 </body>
