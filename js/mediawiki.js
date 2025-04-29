@@ -89,27 +89,23 @@ async function getUploadToken() {
   return data.query.tokens.upload;
 }
 
-async function uploadImage(file) {
+
+
+export async function uploadImage(file) {
   const token = await getUploadToken();
 
   const formData = new FormData();
-  formData.append('action', 'upload');
+  formData.append('action',  'upload');
   formData.append('filename', file.name);
-  formData.append('file', file);
-  formData.append('token', token);
-  formData.append('format', 'json');
+  formData.append('file',     file);
+  formData.append('token',    token);
+  formData.append('format',  'json');
 
-  const response = await fetch('https://your-mediawiki-site/api.php', {
-    method: 'POST',
-    body: formData
-  });
+  const response = await fetch('https://your-mediawiki-site/api.php', { method: 'POST',  body: formData });
 
   const data = await response.json();
-  if (data.error) {
-    console.error('Upload failed:', data.error);
-  } else {
-    console.log('Upload successful:', data);
-  }
+  if (data.error) {console.error('Upload failed:', data.error);} 
+  else            {console.log('Upload successful:', data);}
 }
 
 
