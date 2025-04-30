@@ -10,26 +10,35 @@ document.addEventListener('paste', async (event) => {
   event.preventDefault();        // should do this before any async activities
 
   // the following two lines are for use during development only 
-  analyzerEvent (event);     // NO async - reason explaind below; has 2 sec timeout - so after it we wait before doing more analysis !
-  window.setTimeout ( async () => {await analyzerClipboard ();}, 3000);  // wit 3 seconds as explained above
 
+  // analyzerEvent (event);     // NO async - reason explaind below; has 2 sec timeout - so after it we wait before doing more analysis !
+  // await analyzerClipboard ();  // this should be second
 
-// TODO: FILTER - should happen only if the current page is running dante
-  // if it is a media type, offer an upload
-// TODO: ALSO MUST ENSURE that if we do a copy somewhere we also get URL information as a reference to the source !!!!
-
-  let types = Array.from(event.clipboardData.types);         // this version gets the types from event.clipboardData
-
-  let selection = await performSelectionOverlay ( types );
-  if (!selection) { console.log ("user canceled"); return;}
-
-  const content = event.clipboardData.getData (selection);
-  console.log ("user selected " + selection + " whose content is: " + content);
-  insertAtCursor(content);
+  let types = Array.from(event.clipboardData.types);         // this version gets the types from event.clip
 
 
 
+  console.warn ("++++ creating overlay now for types: " + JSON.stringify (types));
+  OVERLAY.create();
+  types.forEach (type => OVERLAY.add(type));
+  OVERLAY.addCancel();
+  let selection = await OVERLAY.promisedSelection();
+  if (!selection) { console.log ("User canceled"); return;} else {console.log ("User selected: " + selection);}
 
+  let idx = types.indexOf(selection);
+  console.log ("POST: ", event.clipboardData);
+  console.log ("POST: ", event.clipboardData.items);
+  event.clipboardData.items[idx].getAsString ( arg => {  
+    console.log ("user selected " + selection + " resolves to " + content);
+    insertAtCursor(content);
+  } );
+// items[i].getAsString ( arg => {itemText[i].asString = arg;} );
+
+
+//  const content = event.clipboardData.getData (selection);
+
+//  console.log ("user selected " + selection + " whose content is: " + content);
+//  insertAtCursor(content);
 
 
 // TODO: still need code parts, take out for the moment
@@ -117,7 +126,7 @@ function analyzerEvent (event) {
       console.log ("  asFileType", itemText[i].asFileType );
   }
     console.groupEnd ();
-}, 2000);
+  }, 2000);
 }
 
 
@@ -193,7 +202,8 @@ const create = () => {
   container = document.createElement('div');
   Object.assign (container.style, {background: 'white', padding: '20px', borderRadius:'8px', boxShadow: '0 0 10px rgba(0,0,0,0.3)' });
   container.innerText = 'Choose clipboard format:'
-  overlay.appendChild(container)
+  overlay.appendChild(container);
+  document.body.appendChild (overlay);
 };
 
 
@@ -213,10 +223,22 @@ const addCancel = () => {    // add a button for cancelation
 };
 
 
-return {create, add};
+const promisedSelection = async () => {    // promises to wait for a user click on a button
+  return new Promise ( (resolve, reject) => {
+    overlay.addEventListener ('click', function onClick(e) {
+      console.log ("overlay click event was ", e);
+      console.log ("overlay user selection was", e.target?.dataset?.selectionType);
+      overlay.remove();
+      overlay.removeEventListener('click', onClick);
+      resolve (e.target?.dataset?.selectionType);
+    } );
+  });
+};
+
+return {create, add, promisedSelection, addCancel};
 
 
-});
+})();
 
 
 
