@@ -9,6 +9,7 @@ import {removeQuery}    from "/js/mediawiki.js"
 
 
 
+/** THIS is the main listener where the service worker offers to react on messages */
 chrome.runtime.onMessage.addListener ( (message, sender, sendResponse) => {
   console.log ("backend received message", message, sender);
 
@@ -75,45 +76,22 @@ chrome.runtime.onInstalled.addListener(() => {  // This will run once when the e
 // cli is an array of an array of types
 async function buildPasteContextMenu (cli) {
   console.log ("buildPasteContextMenu " + cli);
-  console.log ("buildPasteContextMenu received ", cli, typeof cli, cli.forEach);
-  cli.forEach ( item => {console.log ("ITEM IS" + item+ " of type " + typeof item);});
-
-  // only one parent level allowed per extension - and need to build that explicitly
-  chrome.contextMenus.create ( {id: "dante-parent", title: "DanteWiki", contexts: ["editable"] } ); 
-
-// chrome.contextMenus.create ( {id: "dante-pa",         title: "Test", contexts: ["editable"] } );
-//chrome.contextMenus.create ( {id: "dante-pa-zwei",         title: "Test Zwei", contexts: ["editable"] } );
-
-/*
-  chrome.contextMenus.create ( {id: "dante-paste-and-upload", title: "Paste and Upload Image", contexts: ["editable"] } );
-  chrome.contextMenus.create ( {id: "dante-paste-text",       title: "Paste Text", contexts: ["editable"] } );
-  chrome.contextMenus.create ( {id: "dante-paste-as",         title: "Paste as...", contexts: ["editable"] } );
-*/
-
-
-
+  chrome.contextMenus.create ( {id: "dante-parent", title: "DanteWiki", contexts: ["editable"] } );  // build the parent for all context menu elements
   cli.forEach ( (item, idx) => {               // iterate clipboard items, in most cases only one
     item.forEach ( (type) => {
       console.log ("taking care of ", type);
        chrome.contextMenus.create ( {id: "dante-paste-as-"+type,   parentId: "dante-parent", title: "Paste as " + type, contexts: ["editable"] } );
     });
     } );
-
-
   console.log ("context menu has beeen built");
-
-
 }
 
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "my-context-menu") {
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: () => {
-        alert("Context menu clicked!");
-      }
-    });
-  }
+
+
+chrome.contextMenus.onClicked.addListener ( async (info, tab) => {
+  console.log ("context menu was clicked at ", info, tab);
+  let result = await chrome.scripting.executeScript ( {target: { tabId: tab.id }, args: "TEXT", func: inject } );
+  // TODO NOW ????
 });
 
 
@@ -167,11 +145,6 @@ chrome.windows.onFocusChanged.addListener( async (windowId) => {
     if (activeTab) {console.log("A chrome window got focused, active tab is:", activeTab); askTabForClipboard (activeTab);  }
   }
 });
-
-
-
-
-
 
 
 // TODO: might be obsolete since we are not using wikidb_session cookie - check if the other handlers are sufficient....

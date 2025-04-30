@@ -32,7 +32,7 @@ export const removeQuery = url => {
 
 import {setStatus} from "/js/status.js";
 
-chrome.storage.local.set ( { WIKI, DOMAIN}, () => {console.log('Value stored!');});
+chrome.storage.local.set ( { WIKI, DOMAIN}, () => {console.log('Value stored!');}); // TODO
 
 
 
@@ -82,28 +82,43 @@ export async function getUser () {
 }
 
 
+async function checkFileExists (filename) {
+  const title = 'File:' + filename;
 
-async function getUploadToken() {
-  const response = await fetch('https://your-mediawiki-site/api.php?action=query&meta=tokens&type=upload&format=json');
-  const data = await response.json();
-  return data.query.tokens.upload;
+  const url = new URL (WIKI + "/api.php");
+  url.searchParams.set('action', 'query');
+  url.searchParams.set('format', 'json');
+  url.searchParams.set('titles', title);
+
+  const response = await fetch(url, { method: 'GET', credentials: 'include'} );
+  const data     = await response.json();
+  const pages    = data.query.pages;
+  const pageId   = Object.keys(pages)[0];    // If pageId is -1, the file does not exist
+
+  return (pageId !== '-1');
 }
 
 
+async function getUploadToken() {
+  const response = await fetch( WIKI + "/api.php?action=query&meta=tokens&type=upload&format=json");
+  const data     = await response.json();
+  return data.query.tokens.upload;
+}
 
-export async function uploadImage(file) {
+// file is a binary blob or file object
+export async function uploadImage (file, fileName) {
   const token = await getUploadToken();
 
   const formData = new FormData();
   formData.append('action',  'upload');
-  formData.append('filename', file.name);
+  formData.append('filename', fileName);
   formData.append('file',     file);
   formData.append('token',    token);
   formData.append('format',  'json');
 
-  const response = await fetch('https://your-mediawiki-site/api.php', { method: 'POST',  body: formData });
+  const response = await fetch ( WIKI + '/api.php', { method: 'POST',  body: formData });
 
-  const data = await response.json();
+  const data     = await response.json();
   if (data.error) {console.error('Upload failed:', data.error);} 
   else            {console.log('Upload successful:', data);}
 }
