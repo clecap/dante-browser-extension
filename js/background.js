@@ -6,7 +6,7 @@ const EXTENSIONID="cnkdelgmbnkedmcohgnnhnebfendmkgb";  // the extension ID deriv
 import {setStatus}      from "/js/status.js"
 import {extractDomain}  from "/js/mediawiki.js"
 import {removeQuery}    from "/js/mediawiki.js"
-
+import {uploadFile}     from "/js/mediawiki.js"
 
 
 /** THIS is the main listener where the service worker offers to react on messages */
@@ -45,7 +45,30 @@ chrome.runtime.onMessage.addListener ( (message, sender, sendResponse) => {
       break;
 
 
-    case "upload_file":  console.log ("background was asked to upload file");
+    case "upload_file":  console.log ("background was asked to upload file, message was: ", message);
+      let uint8 = new Uint8Array (message.buffer);
+      const blob = new Blob([uint8], { type: message.mimeType });
+      const identification = message.identification;   // for proper UI feedback and reidentification of call and response
+      (async () => { // start async activity
+        let res = await uploadFile (  blob,  message.fileName, message.mimeType ); 
+        res.identification = identification;   // patch in the identification into the response again
+        console.log ("did upload, result:", res);
+
+// need to do an async reporting to user !!!
+
+/*
+  if (res.exception) {}
+  if (res.error) {}
+  if ...
+
+*/
+
+  sendResponse ( {response: "upload_completed", details: res} );
+
+
+      })();  // END ASYNC
+      console.log ("upload was initiated");
+      return true;  // we will send an asynchronous response
 
       break;
 
@@ -69,27 +92,26 @@ chrome.runtime.onInstalled.addListener(() => {  // This will run once when the e
 
 
 
-
-
 // given out ckipboard information object, build a context menu
 // issue is: serviceworker cannot access the clipboard 
 // cli is an array of an array of types
 async function buildPasteContextMenu (cli) {
-  console.log ("buildPasteContextMenu " + cli);
+  const VERBOSE = false;
+  if (VERBOSE) {console.group ("buildPasteContextMenu " + cli);}
   chrome.contextMenus.create ( {id: "dante-parent", title: "DanteWiki", contexts: ["editable"] } );  // build the parent for all context menu elements
   cli.forEach ( (item, idx) => {               // iterate clipboard items, in most cases only one
     item.forEach ( (type) => {
-      console.log ("taking care of ", type);
+       if (VERBOSE) console.log ("building context menu for type ", type);
        chrome.contextMenus.create ( {id: "dante-paste-as-"+type,   parentId: "dante-parent", title: "Paste as " + type, contexts: ["editable"] } );
     });
     } );
-  console.log ("context menu has beeen built");
+  if (VERBOSE) {console.log ("context menu has beeen built"); console.groupEnd();}
 }
 
 
 
 chrome.contextMenus.onClicked.addListener ( async (info, tab) => {
-  console.log ("context menu was clicked at ", info, tab);
+  // console.log ("context menu was clicked at ", info, tab);
   let result = await chrome.scripting.executeScript ( {target: { tabId: tab.id }, args: "TEXT", func: inject } );
   // TODO NOW ????
 });

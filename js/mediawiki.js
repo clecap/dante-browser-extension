@@ -4,7 +4,6 @@ export const WIKI="https://localhost:4443/wiki-dir/";  // TODO: should be set in
 export const DOMAIN = "localhost";
 
 
-
 export const extractDomain = url => {
   try {
     let normalizedUrl = url.trim();
@@ -34,8 +33,6 @@ import {setStatus} from "/js/status.js";
 
 chrome.storage.local.set ( { WIKI, DOMAIN}, () => {console.log('Value stored!');}); // TODO
 
-
-
 // returns JSON !
 export async function fetchWithTimeout (url, options = {}, timeout = 10000, clearTextError) {
   const controller = new AbortController();
@@ -55,9 +52,6 @@ export async function fetchWithTimeout (url, options = {}, timeout = 10000, clea
     ; 
   } finally { clearTimeout(id); }
 }
-
-
-
 
 
 // resolves to
@@ -82,6 +76,7 @@ export async function getUser () {
 }
 
 
+// TODO: must still test situaiton of an override - what does the system do ??
 async function checkFileExists (filename) {
   const title = 'File:' + filename;
 
@@ -99,28 +94,33 @@ async function checkFileExists (filename) {
 }
 
 
-async function getUploadToken() {
-  const response = await fetch( WIKI + "/api.php?action=query&meta=tokens&type=upload&format=json");
+async function getCsrfToken() {
+  const response = await fetch( WIKI + "/api.php?action=query&meta=tokens&type=csrf&format=json");
   const data     = await response.json();
-  return data.query.tokens.upload;
+  return data.query.tokens.csrftoken;
 }
 
-// file is a binary blob or file object
-export async function uploadImage (file, fileName) {
-  const token = await getUploadToken();
+// uploads a file to the dantewiki, given a blob and a fileName
+export async function uploadFile (blob, fileName) {
+  // console.log ("Mediawiki: Uploading blob of type= " + blob.type + " and size= " + blob.size + "  under name=" + fileName, blob);
+  let token;
+  let ret = {};  // collect response messages for a return value
+  try {
+    console.log ("*** waiting for token");
+    token = await getCsrfToken();             // console.log ("*** got token", token);
+    const formData = new FormData();          // console.log ("*** will prepare data");
+    formData.append('action',  'upload');
+    formData.append('filename', fileName);
+    formData.append('file',     blob);
+    formData.append('token',    token);
+    formData.append('format',  'json');       // console.log ("*** Will now fetch");
+    const response = await fetch ( WIKI + '/api.php', { method: 'POST',  body: formData, credentials: "include" });
+    // console.log ("*** Fetch returned ", response);
+    ret.wiki       = await response.json();
+    // console.log ("***** Response of dantewiki is: ", ret.wiki);
+  } catch (err) {
+    console.error ("Uploading saw error", err);
+    ret.exception = err;
+  } finally { return ret; }
 
-  const formData = new FormData();
-  formData.append('action',  'upload');
-  formData.append('filename', fileName);
-  formData.append('file',     file);
-  formData.append('token',    token);
-  formData.append('format',  'json');
-
-  const response = await fetch ( WIKI + '/api.php', { method: 'POST',  body: formData });
-
-  const data     = await response.json();
-  if (data.error) {console.error('Upload failed:', data.error);} 
-  else            {console.log('Upload successful:', data);}
 }
-
-
